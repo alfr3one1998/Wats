@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0f766e" />
+    <title>دليل عملاء واتساب</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" aria-live="polite">
+      <section class="login-card" id="loginView" aria-labelledby="loginTitle">
+        <div class="brand-mark" aria-hidden="true">و</div>
+        <p class="eyebrow">WATS</p>
+        <h1 id="loginTitle">دليل عملاء واتساب</h1>
+        <p class="login-copy">كل رسالة واردة تُسجَّل تلقائيًا في دليل عملائك.</p>
+        <form id="loginForm" class="login-form">
+          <label for="password">كلمة مرور لوحة الإدارة</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" required />
+          <button class="button button-primary" type="submit">دخول للوحة</button>
+          <p class="form-message" id="loginMessage" role="alert"></p>
+        </form>
+        <p class="login-footnote">هذه اللوحة لا ترسل رسائل تلقائية ولا تحفظ أي بيانات داخل واتساب نفسه.</p>
+      </section>
+
+      <section class="dashboard is-hidden" id="dashboardView">
+        <header class="topbar">
+          <a href="/" class="identity" aria-label="الرئيسية">
+            <span class="mini-mark" aria-hidden="true">و</span>
+            <span>
+              <strong>دليل عملاء واتساب</strong>
+              <small>تسجيل رسمي عبر WhatsApp Business</small>
+            </span>
+          </a>
+          <div class="topbar-actions">
+            <button class="button button-quiet" id="copyWebhookButton" type="button">نسخ رابط الربط</button>
+            <a class="button button-quiet" href="/api/contacts.csv">تصدير CSV</a>
+            <button class="icon-button" id="logoutButton" type="button" title="تسجيل الخروج" aria-label="تسجيل الخروج">↩</button>
+          </div>
+        </header>
+
+        <section class="connection-strip" id="connectionStrip">
+          <span class="status-dot" id="connectionDot" aria-hidden="true"></span>
+          <p id="connectionText">يتم فحص إعداد الربط…</p>
+          <button class="text-button" type="button" id="showSetupButton">كيف أربطه؟</button>
+        </section>
+
+        <section class="metrics" aria-label="ملخص العملاء">
+          <article class="metric-card">
+            <span>العملاء المسجلون</span>
+            <strong id="statContacts">—</strong>
+            <small>أرقام تم التقاطها تلقائيًا</small>
+          </article>
+          <article class="metric-card accent">
+            <span>إجمالي الرسائل</span>
+            <strong id="statMessages">—</strong>
+            <small>رسائل واردة فقط</small>
+          </article>
+          <article class="metric-card warm">
+            <span>عملاء اليوم</span>
+            <strong id="statToday">—</strong>
+            <small>أول رسالة اليوم</small>
+          </article>
+          <article class="metric-card violet">
+            <span>أسماء مضافة يدويًا</span>
+            <strong id="statNamed">—</strong>
+            <small>يمكن تعديلها من اللوحة</small>
+          </article>
+        </section>
+
+        <section class="workspace">
+          <div class="directory-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">الدليل</p>
+                <h2>عملاؤك</h2>
+              </div>
+              <button class="button button-quiet demo-button" type="button" id="demoButton">أضف رسالة تجريبية</button>
+            </div>
+
+            <div class="directory-controls">
+              <label class="search-box" for="searchInput">
+                <span aria-hidden="true">⌕</span>
+                <input id="searchInput" type="search" placeholder="ابحث بالاسم أو الرقم" autocomplete="off" />
+              </label>
+              <div class="filter-tabs" role="tablist" aria-label="تصفية العملاء">
+                <button type="button" class="filter-tab is-active" data-filter="all" role="tab" aria-selected="true">الكل</button>
+                <button type="button" class="filter-tab" data-filter="named" role="tab" aria-selected="false">مسمّون</button>
+                <button type="button" class="filter-tab" data-filter="unnamed" role="tab" aria-selected="false">يحتاج اسم</button>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>العميل</th>
+                    <th>آخر رسالة</th>
+                    <th>الرسائل</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="contactsTable"></tbody>
+              </table>
+              <div class="empty-state is-hidden" id="emptyState">
+                <div aria-hidden="true">☏</div>
+                <h3>ما فيه عملاء هنا لسه</h3>
+                <p>بعد ربط WhatsApp Business، أي رسالة جديدة ستظهر هنا تلقائيًا.</p>
+              </div>
+            </div>
+          </div>
+
+          <aside class="detail-panel" id="detailPanel" aria-label="تفاصيل العميل">
+            <div class="detail-empty" id="detailEmpty">
+              <div class="detail-empty-icon" aria-hidden="true">◌</div>
+              <h2>اختر عميلًا</h2>
+              <p>ستجد الاسم والرقم وآخر الرسائل، وتقدر تضيف الاسم الذي تحبه.</p>
+            </div>
+            <div class="detail-content is-hidden" id="detailContent">
+              <div class="detail-topline">
+                <div class="avatar large" id="detailAvatar">ع</div>
+                <div>
+                  <h2 id="detailName">—</h2>
+                  <a id="detailPhone" target="_blank" rel="noreferrer">—</a>
+                </div>
+              </div>
+              <dl class="detail-stats">
+                <div><dt>أول تواصل</dt><dd id="detailFirstMessage">—</dd></div>
+                <div><dt>إجمالي الرسائل</dt><dd id="detailMessageCount">—</dd></div>
+              </dl>
+
+              <form class="customer-form" id="customerForm">
+                <input id="selectedPhone" type="hidden" />
+                <label for="customName">الاسم داخل دليلك</label>
+                <input id="customName" maxlength="80" placeholder="مثال: أم أحمد — طلبات الكيك" />
+                <label for="labelsInput">وسوم العميل</label>
+                <input id="labelsInput" maxlength="200" placeholder="مثال: عميل دائم، زفاف" />
+                <small>افصل بين الوسوم بفاصلة.</small>
+                <button class="button button-primary" type="submit">حفظ التعديل</button>
+                <p class="form-message" id="customerMessage" role="status"></p>
+              </form>
+
+              <div class="recent-messages">
+                <div class="section-line"><h3>آخر الرسائل</h3><span id="messageCountLabel"></span></div>
+                <ol id="messagesList"></ol>
+              </div>
+            </div>
+          </aside>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="setupDialog">
+      <button class="dialog-close" type="button" id="closeSetupButton" aria-label="إغلاق">×</button>
+      <p class="eyebrow">ربط رسمي وآمن</p>
+      <h2>اربط رقم WhatsApp Business في 4 خطوات</h2>
+      <ol class="setup-steps">
+        <li>أنشئ تطبيقًا في <strong>Meta for Developers</strong> وأضف منتج WhatsApp.</li>
+        <li>من إعدادات Webhooks اختر <strong>messages</strong>.</li>
+        <li>الصق رابط الربط الذي في أعلى اللوحة، ثم ضع نفس رمز التحقق الموجود في <code>WHATSAPP_VERIFY_TOKEN</code>.</li>
+        <li>ضع <code>WHATSAPP_APP_SECRET</code> في إعدادات الاستضافة لتأكيد أن Meta فقط هي التي ترسل البيانات.</li>
+      </ol>
+      <p class="dialog-note">بعدها أي عميل يرسل رسالة لأول مرة يُضاف برقم واتساب واسمه الظاهر، بدون أي وصول غير رسمي لحسابك.</p>
+    </dialog>
+
+    <dialog id="demoDialog">
+      <button class="dialog-close" type="button" id="closeDemoButton" aria-label="إغلاق">×</button>
+      <p class="eyebrow">للتجربة فقط</p>
+      <h2>أضف رسالة وهمية</h2>
+      <form id="demoForm" class="customer-form">
+        <label for="demoName">اسم العميل الظاهر</label>
+        <input id="demoName" maxlength="80" placeholder="مثال: أم محمد" />
+        <label for="demoPhone">رقم واتساب</label>
+        <input id="demoPhone" inputmode="tel" maxlength="20" placeholder="9665XXXXXXXX" required />
+        <label for="demoMessage">نص الرسالة</label>
+        <textarea id="demoMessage" maxlength="500" placeholder="السلام عليكم، أبغى أطلب كيكة" required></textarea>
+        <button class="button button-primary" type="submit">تسجيل الرسالة</button>
+        <p class="form-message" id="demoMessageStatus" role="status"></p>
+      </form>
+    </dialog>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>
